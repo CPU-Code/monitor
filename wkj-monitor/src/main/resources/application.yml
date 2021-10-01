@@ -3,8 +3,8 @@ spring:
     name: monitor-service
   datasource:
     url: jdbc:mysql://39.101.132.xx:3306/ykk?useUnicode=true&autoReconnect=true&autoReconnectForPools=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: xx
-    password: xx
+    username: xxx
+    password: xxx
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: 39.101.132.xx
@@ -23,7 +23,7 @@ spring:
 
 elasticsearch:
   rest:
-    uris: http://39.101.132.xxx:9200
+    uris: http://39.101.132.xx:9200
 
 
 server:
