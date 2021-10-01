@@ -1,5 +1,8 @@
 package com.cpucode.monitor.service;
 
+import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.vo.Pager;
+
 /**
  * @author : cpucode
  * @date : 2021/10/1 17:10
@@ -22,4 +25,14 @@ public interface DeviceService {
      * @return
      */
     boolean updateTags(String deviceId,String tags);
+
+    /**
+     * 搜索设备
+     * @param page
+     * @param pageSize
+     * @param sn
+     * @param tag
+     * @return
+     */
+    Pager<DeviceDTO> queryPage(Long page, Long pageSize, String sn, String tag, Integer status);
 }

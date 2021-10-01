@@ -3,6 +3,7 @@ package com.cpucode.monitor.service.impl;
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.DeviceService;
+import com.cpucode.monitor.vo.Pager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,22 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /**
+     * 分页搜索设备
+     * @param page 页码
+     * @param pageSize 页大小
+     * @param sn    设备id
+     * @param tag  标签
+     * @param status  状态
+     * @return
+     */
+    @Override
+    public Pager<DeviceDTO> queryPage(Long page, Long pageSize,
+                                      String sn, String tag,
+                                      Integer status) {
+        return esRepository.searchDevice(page, pageSize, sn, tag, status);
+    }
+
+    /**
      * 查询设备
      * @param deviceId 设备id
      * @return
@@ -81,4 +98,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         return deviceDTO;
     }
+
+
 }
