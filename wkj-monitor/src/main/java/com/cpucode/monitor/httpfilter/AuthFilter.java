@@ -53,6 +53,7 @@ public class AuthFilter implements Filter{
         }
 
         try {
+            // 解析 token , 正常放行
             JwtUtil.parseJWT(authToken);
         } catch (Exception e) {
             //jwt校验失败，返回

@@ -8,6 +8,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 管理员表
+ *
  * @author : cpucode
  * @date : 2021/10/1 13:09
  * @github : https://github.com/CPU-Code

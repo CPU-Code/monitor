@@ -5,6 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 用户视图
+ *
  * @author : cpucode
  * @date : 2021/10/1 13:45
  * @github : https://github.com/CPU-Code
