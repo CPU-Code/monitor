@@ -163,4 +163,27 @@ public class ESRepository {
             return false;
         }
     }
+
+    /**
+     * 更新设备告警信息
+     * @param deviceDTO
+     * @return
+     */
+    public boolean updateDevicesAlarm(DeviceDTO deviceDTO){
+        UpdateRequest updateRequest = new UpdateRequest("device", deviceDTO.getDeviceId())
+                .doc(   "alarm", deviceDTO.getAlarm(),  //是否告警
+                        "level", deviceDTO.getLevel(),  //告警级别
+                        "alarmName", deviceDTO.getAlarmName());     //告警名称
+
+        try {
+            restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("更新设备告警信息出错");
+            return false;
+        }
+
+    }
 }

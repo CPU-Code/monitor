@@ -60,4 +60,19 @@ public class ESTest {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 更新设备告警信息
+     * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/testAlarm
+     */
+    @Test
+    public void testAlarm(){
+        DeviceDTO deviceDTO = new DeviceDTO();
+        deviceDTO.setDeviceId("1111");
+        deviceDTO.setAlarm(true);
+        deviceDTO.setLevel(1);
+        deviceDTO.setAlarmName("温度过高");
+
+        esRepository.updateDevicesAlarm(deviceDTO);
+    }
 }
