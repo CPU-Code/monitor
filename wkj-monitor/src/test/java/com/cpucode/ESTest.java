@@ -3,6 +3,8 @@ package com.cpucode;
 import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.es.ESRepository;
+import com.cpucode.monitor.util.JsonUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ public class ESTest {
     private ESRepository esRepository;
 
     /**
+     * 插入数据
      * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/addDevices
      */
     @Test
@@ -36,5 +39,25 @@ public class ESTest {
         deviceDTO.setStatus(true);
 
         esRepository.addDevices(deviceDTO);
+    }
+
+    /**
+     * 根据设备id 查询数据
+     * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/searchDeviceById
+     */
+    @Test
+    public void testSearchById(){
+        // 根据 设备id 查询数据
+        DeviceDTO deviceDTO = esRepository.searchDeviceById("1111");
+
+        try {
+            // 转成json
+            String json = JsonUtil.serialize(deviceDTO);
+
+            // 打印
+            System.out.println(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }
