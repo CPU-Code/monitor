@@ -5,8 +5,14 @@ import com.cpucode.monitor.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,5 +64,56 @@ public class ESRepository {
             e.printStackTrace();
             log.error("设备添加发生异常");
         }
+    }
+
+    /**
+     * 查询设备
+     * @param deviceId 设备id
+     * @return
+     */
+    public DeviceDTO searchDeviceById(String deviceId){
+        // 创建查询
+        SearchRequest searchRequest = new SearchRequest("devices");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // 查询条件
+        searchSourceBuilder.query(QueryBuilders.termQuery("_id", deviceId));
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            // 查询结果
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 查询json 值
+            SearchHits hits = searchResponse.getHits();
+            // 数据和
+            long hitsCount = hits.getTotalHits().value;
+
+            // 校验
+            if(hitsCount<=0) return null;
+
+            DeviceDTO deviceDTO = null;
+
+            for(SearchHit hit : hits){
+                // 转成 String
+                String hitResult = hit.getSourceAsString();
+                // json 转 类
+                deviceDTO = JsonUtil.getByJson(hitResult, DeviceDTO.class);
+
+                // 设置设备id
+                deviceDTO.setDeviceId(deviceId);
+
+                // TODO
+                break;
+            }
+
+            // 返回数据
+            return deviceDTO;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("查询设备异常");
+
+            return null;
+        }
+
     }
 }
