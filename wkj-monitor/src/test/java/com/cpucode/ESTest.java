@@ -63,7 +63,7 @@ public class ESTest {
 
     /**
      * 更新设备告警信息
-     * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/testAlarm
+     * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/updateDevicesAlarm
      */
     @Test
     public void testAlarm(){
@@ -74,5 +74,14 @@ public class ESTest {
         deviceDTO.setAlarmName("温度过高");
 
         esRepository.updateDevicesAlarm(deviceDTO);
+    }
+
+    /**
+     * 更新设备告警信息
+     * wkj-monitor/src/main/java/com/cpucode/monitor/es/ESRepository/updateOnline
+     */
+    @Test
+    public void testOnline(){
+        esRepository.updateOnline("123456",false);
     }
 }

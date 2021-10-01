@@ -184,6 +184,27 @@ public class ESRepository {
             log.error("更新设备告警信息出错");
             return false;
         }
+    }
 
+    /**
+     * 更新在线状态
+     * @param deviceId 设备id
+     * @param online 在线状态
+     * @return
+     */
+    public boolean updateOnline(String deviceId, Boolean online){
+        UpdateRequest updateRequest = new UpdateRequest("devices",deviceId)
+                .doc( "online",online );
+
+        try {
+            restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("更新在线状态出错");
+
+            return false;
+        }
     }
 }
