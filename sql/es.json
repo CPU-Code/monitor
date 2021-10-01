@@ -1,0 +1,31 @@
+
+# 创建索引库（打开kibana创建
+
+PUT /devices
+{
+    "mappings": {
+        "properties": {
+            "deviceId": {
+                "type": "keyword"
+            },
+            "alarm": {
+                "type": "boolean"
+            },
+            "alarmName": {
+                "type": "keyword"
+            },
+            "level": {
+                "type": "integer"
+            },
+            "online": {
+                "type": "boolean"
+            },
+            "status": {
+                "type": "boolean"
+            },
+            "tag": {
+                "type": "keyword"
+            }
+        }
+    }
+}
