@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: monitor-service
+  datasource:
+    url: jdbc:mysql://39.101.132.xx:3306/ykk?useUnicode=true&autoReconnect=true&autoReconnectForPools=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: xxx
+    password: xxx
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 39.101.132.xx
+    port: 6379
+    database: 0
+    lettuce:
+      pool:
+        max-active: 10
+        max-wait: -1
+        max-idle: 5
+        min-idle: 1
+      shutdown-timeout: 100
+    timeout: 1000
+    password:
+
+server:
+  port: 8001
