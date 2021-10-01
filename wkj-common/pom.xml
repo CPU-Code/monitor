@@ -11,6 +11,7 @@
 
     <artifactId>wkj-common</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <description>基础通用性定义</description>
 
     <dependencies>
         <dependency>
