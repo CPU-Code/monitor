@@ -1,5 +1,5 @@
 
-# 创建索引库（打开kibana创建
+# 创建索引库 , 打开kibana创建
 
 PUT /devices
 {
@@ -27,5 +27,13 @@ PUT /devices
                 "type": "keyword"
             }
         }
+    }
+}
+
+# 查询数据
+GET devices/_search
+{
+    "query": {
+        "match_all": {}
     }
 }
