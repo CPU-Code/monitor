@@ -47,6 +47,30 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     /**
+     * 更新设备标签
+     * @param deviceId 设备id
+     * @param tags 设备标签
+     * @return
+     */
+    @Override
+    public boolean updateTags(String deviceId, String tags){
+        // 校验
+        if (deviceId == null){
+            return false;
+        }
+        if (tags == null){
+            return false;
+        }
+
+        DeviceDTO deviceDTO = findDevice(deviceId);
+        if (deviceDTO == null){
+            return false;
+        }
+
+        return esRepository.updateDeviceTag(deviceId, tags);
+    }
+
+    /**
      * 查询设备
      * @param deviceId 设备id
      * @return

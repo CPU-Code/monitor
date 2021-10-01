@@ -44,6 +44,12 @@ public class AuthFilter implements Filter{
             return;
         }
 
+        //tag接口不校验token
+        if (path.contains("/device/tags")){
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         String authToken = ((HttpServletRequest) servletRequest).getHeader("Authorization");
 
         //如何header中不存在Authorization的值，直接返回校验失败

@@ -33,4 +33,14 @@ public class DeviceController {
     public boolean setStatus(@RequestBody DeviceVO deviceVO){
         return deviceService.setStatus(deviceVO.getSn(), deviceVO.getStatus());
     }
+
+    /**
+     * 设置设备标签
+     * @param deviceVO
+     * @return
+     */
+    @PutMapping("/tags")
+    public boolean setTags(@RequestBody DeviceVO deviceVO){
+        return deviceService.updateTags(deviceVO.getSn(), deviceVO.getTags());
+    }
 }

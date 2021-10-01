@@ -139,4 +139,28 @@ public class ESRepository {
             return false;
         }
     }
+
+    /**
+     * 更新设备标签
+     * @param deviceId 设备id
+     * @param tags 设备标签
+     * @return
+     */
+    public boolean updateDeviceTag(String deviceId, String tags){
+        //更新条件
+        UpdateRequest updateRequest = new UpdateRequest("devices", deviceId)
+                .doc("tag", tags);
+
+        try{
+            // 更新操作
+            restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+
+            return true;
+        }catch (IOException e){
+            e.printStackTrace();
+            log.error("更新设备标签出错");
+
+            return false;
+        }
+    }
 }
