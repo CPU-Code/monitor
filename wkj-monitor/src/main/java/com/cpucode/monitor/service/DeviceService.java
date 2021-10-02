@@ -35,4 +35,11 @@ public interface DeviceService {
      * @return
      */
     Pager<DeviceDTO> queryPage(Long page, Long pageSize, String sn, String tag, Integer status);
+
+    /**
+     * 存储设备信息
+     * @param deviceDTO  设备信息
+     * @return
+     */
+    boolean saveDeviceInfo(DeviceDTO deviceDTO);
 }

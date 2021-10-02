@@ -88,6 +88,30 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /**
+     * 存储设备信息
+     * @param deviceDTO  设备信息
+     * @return
+     */
+    @Override
+    public boolean saveDeviceInfo(DeviceDTO deviceDTO) {
+        //查询设备 ，判断开关状态 ，如果是关闭则不处理
+        DeviceDTO device = findDevice(deviceDTO.getDeviceId());
+        if (device != null && !device.getStatus()){
+            return false;
+        }
+
+        // 如果当前设备查不到，新增
+        if (device == null){
+            esRepository.addDevices(deviceDTO);
+        }else {
+            //如果可以查询到，更新告警信息
+            esRepository.updateDevicesAlarm(deviceDTO);
+        }
+
+        return true;
+    }
+
+    /**
      * 查询设备
      * @param deviceId 设备id
      * @return
@@ -98,6 +122,5 @@ public class DeviceServiceImpl implements DeviceService {
 
         return deviceDTO;
     }
-
 
 }
