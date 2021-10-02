@@ -20,25 +20,46 @@ import java.util.List;
 public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> implements AlarmService{
 
     /**
-     * 告警信息
+     * 判断告警信息
      * @param quotaDTO 指标DTO
-     * @return
+     * @return 报警配置
      */
    @Override
    public AlarmEntity verifyQuota(QuotaDTO quotaDTO){
        //1.根据指标id查询告警判断规则列表
-       List<AlarmEntity> byQuotaId = getByQuotaId(quotaDTO.getId());
+       List<AlarmEntity> alarmEntityList = getByQuotaId(quotaDTO.getId());
+       AlarmEntity alarm = null;
 
-       for (){
+       for (AlarmEntity alarmEntity : alarmEntityList){
            //判断：操作符和指标对比
-           if (){
-
+           if ("String".equals( quotaDTO.getValueType() ) ||
+                   "Boolean".equals(quotaDTO.getValueType())){
+                if (alarmEntity.getOperator().equals("=") &&
+                        quotaDTO.getStringValue().equals(alarmEntity.getThreshold())){
+                    alarm = alarmEntity;
+                    break;
+                }
            }else {
-
+               //数值
+               if(alarmEntity.getOperator().equals(">") &&
+                       quotaDTO.getValue() > alarmEntity.getThreshold() ){
+                   alarm = alarmEntity;
+                   break;
+               }
+               if(alarmEntity.getOperator().equals("<") &&
+                       quotaDTO.getValue() < alarmEntity.getThreshold() ){
+                   alarm = alarmEntity;
+                   break;
+               }
+               if(alarmEntity.getOperator().equals("=") &&
+                       quotaDTO.getValue().equals(alarmEntity.getThreshold()) ){
+                   alarm = alarmEntity;
+                   break;
+               }
            }
        }
 
-       return null;
+       return alarm;
    }
 
     /**
