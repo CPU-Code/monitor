@@ -2,6 +2,8 @@ package com.cpucode.monitor.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.QuotaDTO;
 import com.cpucode.monitor.entity.AlarmEntity;
 import com.cpucode.monitor.mapper.AlarmMapper;
@@ -76,5 +78,57 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> impl
                 .orderByDesc(AlarmEntity::getLevel);
 
         return this.list(wrapper);
+    }
+
+    /**
+     *  根据设备信息判断
+     * @param deviceInfoDTO
+     * @return
+     */
+    @Override
+    public DeviceInfoDTO verifyDeviceInfo(DeviceInfoDTO deviceInfoDTO) {
+        // 封装指标的告警  封装设备的告警
+        DeviceDTO deviceDTO = deviceInfoDTO.getDevice();
+
+        //假设不告警
+        deviceDTO.setAlarm(false);
+        deviceDTO.setAlarmName("正常");
+        deviceDTO.setLevel(0);
+        deviceDTO.setOnline(true);
+        deviceDTO.setStatus(true);
+
+        for (QuotaDTO quotaDTO : deviceInfoDTO.getQuotaList()){
+            //根据指标得到告警信息
+            AlarmEntity alarmEntity = verifyQuota(quotaDTO);
+
+            if (alarmEntity != null){
+                //如果指标存在告警
+                quotaDTO.setAlarm("1");
+                //告警名称
+                quotaDTO.setAlarmName(alarmEntity.getName());
+                //告警级别
+                quotaDTO.setLevel(alarmEntity.getLevel() + "");
+                //告警web钩子
+                quotaDTO.setAlarmWebHook(alarmEntity.getWebHook());
+                //沉默周期
+                quotaDTO.setCycle(alarmEntity.getCycle());
+
+                //存储设备告警信息
+                if(alarmEntity.getLevel().intValue() > deviceDTO.getLevel().intValue()){
+                    deviceDTO.setLevel(alarmEntity.getLevel());
+                    deviceDTO.setAlarm(true);
+                    deviceDTO.setAlarmName(alarmEntity.getName());
+                }
+            }else {
+                //如果指标不存储在告警
+                quotaDTO.setAlarm("0");
+                quotaDTO.setAlarmName("正常");
+                quotaDTO.setLevel("0");
+                quotaDTO.setAlarmWebHook("");
+                quotaDTO.setCycle(0);
+            }
+        }
+
+        return deviceInfoDTO;
     }
 }

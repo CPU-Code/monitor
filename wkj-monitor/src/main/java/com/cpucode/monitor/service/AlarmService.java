@@ -1,6 +1,7 @@
 package com.cpucode.monitor.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.QuotaDTO;
 import com.cpucode.monitor.entity.AlarmEntity;
 
@@ -25,4 +26,10 @@ public interface AlarmService extends IService<AlarmEntity> {
      * @return
      */
     public List<AlarmEntity> getByQuotaId(Integer quotaId);
+
+    /**
+     * 根据设备信息判断
+     * @param deviceInfoDTO
+     */
+    DeviceInfoDTO verifyDeviceInfo(DeviceInfoDTO deviceInfoDTO);
 }

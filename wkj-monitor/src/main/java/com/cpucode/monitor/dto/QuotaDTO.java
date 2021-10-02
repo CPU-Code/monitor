@@ -73,4 +73,29 @@ public class QuotaDTO implements Serializable {
      * 设备Id
      */
     private String deviceId;
+
+    /**
+     * 是否告警
+     */
+    private String alarm;
+
+    /**
+     * 告警名称
+     */
+    private String alarmName;
+
+    /**
+     * 告警级别
+     */
+    private String level;
+
+    /**
+     * 告警web钩子
+     */
+    private String alarmWebHook;
+
+    /**
+     * 沉默周期
+     */
+    private Integer cycle;
 }
