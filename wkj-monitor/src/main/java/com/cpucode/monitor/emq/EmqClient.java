@@ -25,6 +25,15 @@ public class EmqClient {
     @Autowired
     private EmqConfig emqConfig;
 
+    /**
+     * 消息回调
+     */
+    @Autowired
+    private EmqMsgProcess emqMsgProcess;
+
+    /**
+     * 客户端连接
+     */
     private MqttClient mqttClient;
 
     /**
@@ -35,6 +44,9 @@ public class EmqClient {
             // 配置连接参数
             mqttClient = new MqttClient(emqConfig.getMqttServerUrl(),
                     "monitor" + UUID.randomUUID().toString());
+            // 消息回调
+            mqttClient.setCallback(emqMsgProcess);
+
             // 连接
             mqttClient.connect();
         }catch (MqttException e){
@@ -56,6 +68,14 @@ public class EmqClient {
         } catch (MqttException e) {
             log.error("mqtt publish msg error",e);
         }
+    }
+
+    /**
+     * 订阅主题
+     * @param topicName 订阅名
+     */
+    public void subscribe(String topicName) throws MqttException{
+        mqttClient.subscribe(topicName);
     }
 
 }
