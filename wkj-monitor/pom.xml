@@ -85,6 +85,14 @@
         </dependency>
         <!--es相关依赖结束-->
 
+        <!-- mqtt 客户端-->
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
