@@ -1,12 +1,18 @@
 package com.cpucode.monitor.emq;
 
+import com.cpucode.monitor.dto.DeviceInfoDTO;
+import com.cpucode.monitor.service.AlarmService;
+import com.cpucode.monitor.service.DeviceService;
 import com.cpucode.monitor.service.QuotaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  * 消息回调类
@@ -23,6 +29,12 @@ public class EmqMsgProcess implements MqttCallback {
 
     @Autowired
     private EmqClient emqClient;
+
+    @Autowired
+    private AlarmService alarmService;
+
+    @Autowired
+    private DeviceService deviceService;
 
     /**
      * 连接丢失时调用
@@ -55,8 +67,22 @@ public class EmqMsgProcess implements MqttCallback {
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
         String payload = new String(mqttMessage.getPayload());
-
         System.out.println("接收到数据：" + payload);
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> payloadMap = mapper.readValue(payload, Map.class);
+
+        //解析数据
+        DeviceInfoDTO deviceInfoDTO = quotaService.analysis(s, payloadMap);
+
+        if (deviceInfoDTO != null){
+            //告警判断
+            //返回包含了告警判断的对象
+            deviceInfoDTO = alarmService.verifyDeviceInfo(deviceInfoDTO);
+
+            //保存设备信息
+            deviceService.saveDeviceInfo(deviceInfoDTO.getDevice());
+        }
     }
 
     @Override
