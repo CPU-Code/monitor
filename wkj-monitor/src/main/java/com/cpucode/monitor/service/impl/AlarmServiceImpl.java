@@ -13,6 +13,8 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -148,7 +150,7 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> impl
      * @return
      */
     @Override
-    Pager<QuotaAllInfo> queryAlarmLog(Long page, Long pageSize,
+    public Pager<QuotaAllInfo> queryAlarmLog(Long page, Long pageSize,
                                       String start, String end,
                                       String alarmName, String deviceId){
         //1.where条件查询语句部分构建
@@ -181,6 +183,15 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> impl
 
         //4.执行查询记录语句
         List<QuotaAllInfo> quotaList = influxRepository.query(listQl.toString(), QuotaAllInfo.class);
+
+        // 添加时间格式处理
+        for (QuotaAllInfo quotaAllInfo : quotaList){
+            //2020-09-19T09:58:34.926Z   DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            //转换为 2020-09-19 09:58:34  格式
+            LocalDateTime dateTime = LocalDateTime.parse(quotaAllInfo.getTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            String time = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+            quotaAllInfo.setTime(time);
+        }
 
         //5.执行统计语句
         List<QuotaCount> quotaCount = influxRepository.query(countQl.toString(), QuotaCount.class);
