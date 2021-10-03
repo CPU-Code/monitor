@@ -2,12 +2,15 @@ package com.cpucode.monitor.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cpucode.monitor.dto.DeviceDTO;
-import com.cpucode.monitor.dto.DeviceInfoDTO;
-import com.cpucode.monitor.dto.QuotaDTO;
+import com.cpucode.monitor.dto.*;
 import com.cpucode.monitor.entity.AlarmEntity;
+import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.mapper.AlarmMapper;
 import com.cpucode.monitor.service.AlarmService;
+import com.cpucode.monitor.vo.Pager;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +23,8 @@ import java.util.List;
  */
 @Service
 public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> implements AlarmService{
+    @Autowired
+    private InfluxRepository influxRepository;
 
     /**
      * 判断告警信息
@@ -130,5 +135,71 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> impl
         }
 
         return deviceInfoDTO;
+    }
+
+    /**
+     * 查询告警日志
+     * @param page 页数
+     * @param pageSize 页码
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param alarmName 警告名
+     * @param deviceId 设备id
+     * @return
+     */
+    @Override
+    Pager<QuotaAllInfo> queryAlarmLog(Long page, Long pageSize,
+                                      String start, String end,
+                                      String alarmName, String deviceId){
+        //1.where条件查询语句部分构建
+        StringBuilder whereQl = new StringBuilder("where alarm = '1'");
+        if(!Strings.isNullOrEmpty(start)){
+            whereQl.append("and time >= '" + start + "' ");
+        }
+        if(!Strings.isNullOrEmpty(end)){
+            whereQl.append("and time <= '" + end + "' ");
+        }
+
+        // 全模糊搜索
+        if(!Strings.isNullOrEmpty(alarmName)){
+            whereQl.append("and alarmName = ~/" + alarmName + "/ ");
+        }
+        // 最左匹配模糊查询
+        if(!Strings.isNullOrEmpty(deviceId)){
+            whereQl.append("and deviceId = ~/^" + deviceId + "/ ");
+        }
+
+        //2.查询记录语句
+        StringBuilder listQl = new StringBuilder("select * from quota ");
+        listQl.append(whereQl.toString());
+        listQl.append("order by desc limit " + pageSize +
+                " offset " + (page - 1) * pageSize);
+
+        //3.查询记录数语句
+        StringBuilder countQl = new StringBuilder("select count(value) from quota");
+        countQl.append(whereQl.toString());
+
+        //4.执行查询记录语句
+        List<QuotaAllInfo> quotaList = influxRepository.query(listQl.toString(), QuotaAllInfo.class);
+
+        //5.执行统计语句
+        List<QuotaCount> quotaCount = influxRepository.query(countQl.toString(), QuotaCount.class);
+
+        //6.返回结果封装
+        if(quotaCount == null || quotaCount.size() <= 0){
+            Pager<QuotaAllInfo> pager = new Pager<>(0L, 0L);
+            pager.setPage(0);
+            pager.setItems(Lists.newArrayList());
+
+            return pager;
+        }
+
+        //记录数
+        Long totalCount = quotaCount.get(0).getCount();
+        Pager<QuotaAllInfo> pager = new Pager<>(totalCount, pageSize);
+        pager.setPage(page);
+        pager.setItems(quotaList);
+
+        return pager;
     }
 }
