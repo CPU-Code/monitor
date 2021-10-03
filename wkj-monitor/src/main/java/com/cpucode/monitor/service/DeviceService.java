@@ -1,6 +1,7 @@
 package com.cpucode.monitor.service;
 
 import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.vo.DeviceQuotaVO;
 import com.cpucode.monitor.vo.Pager;
 
 /**
@@ -45,8 +46,19 @@ public interface DeviceService {
 
     /**
      * 更新在线状态
-     * @param deviceId
-     * @param online
+     * @param deviceId 设备id
+     * @param online 是否在线
      */
     void updateOnline(String deviceId, Boolean online);
+
+    /**
+     * 查询设备详情
+     * @param page 页数
+     * @param pageSize 页码
+     * @param deviceId 设备id
+     * @param tag 标签
+     * @param state 启用
+     * @return
+     */
+    Pager<DeviceQuotaVO> queryDeviceQuota(Long page, Long pageSize, String deviceId, String tag, Integer state);
 }

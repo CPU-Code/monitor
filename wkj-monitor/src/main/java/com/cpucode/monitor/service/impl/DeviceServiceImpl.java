@@ -1,12 +1,19 @@
 package com.cpucode.monitor.service.impl;
 
 import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.DeviceService;
+import com.cpucode.monitor.service.QuotaService;
+import com.cpucode.monitor.vo.DeviceQuotaVO;
 import com.cpucode.monitor.vo.Pager;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author : cpucode
@@ -19,6 +26,9 @@ import org.springframework.stereotype.Service;
 public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private ESRepository esRepository;
+
+    @Autowired
+    private QuotaService quotaService;
 
     /**
      * 更改设备状态
@@ -135,6 +145,37 @@ public class DeviceServiceImpl implements DeviceService {
         esRepository.updateOnline(deviceId, online);
     }
 
+    /**
+     * 查询设备详情
+     * @param page 页数
+     * @param pageSize 页码
+     * @param deviceId 设备id
+     * @param tag 标签
+     * @param state 启用
+     * @return
+     */
+    @Override
+    public Pager<DeviceQuotaVO> queryDeviceQuota(Long page, Long pageSize, String deviceId, String tag, Integer state){
+        //1.查询设备列表
+        Pager<DeviceDTO> pager = esRepository.searchDevice(page, pageSize, deviceId, tag, state);
+
+        //2.查询指标列表
+        List<DeviceQuotaVO> deviceQuotaVOList = Lists.newArrayList();
+        pager.getItems().forEach(deviceDTO -> {
+            DeviceQuotaVO deviceQuotaVO=new DeviceQuotaVO();
+            BeanUtils.copyProperties(deviceDTO, deviceQuotaVO );
+            //查询指标
+            List<QuotaInfo> quotaList = quotaService.getLastQuotaList(deviceDTO.getDeviceId());
+            deviceQuotaVO.setQuotaList(quotaList);
+            deviceQuotaVOList.add(deviceQuotaVO);
+        });
+
+        //3.封装返回结果
+        Pager<DeviceQuotaVO> pageResult = new Pager(pager.getCounts(), pageSize);
+        pageResult.setItems(deviceQuotaVOList);
+
+        return pageResult;
+    }
 
     /**
      * 查询设备
