@@ -199,8 +199,8 @@ public class ESRepository {
      * @return
      */
     public boolean updateOnline(String deviceId, Boolean online){
-        UpdateRequest updateRequest = new UpdateRequest("devices",deviceId)
-                .doc( "online",online );
+        UpdateRequest updateRequest = new UpdateRequest("devices", deviceId)
+                .doc( "online", online);
 
         try {
             restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);

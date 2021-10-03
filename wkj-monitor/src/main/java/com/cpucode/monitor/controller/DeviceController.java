@@ -71,7 +71,21 @@ public class DeviceController {
      * @param param
      */
     @PostMapping("/clientAction")
-    public void clientAction(@RequestBody Map<String,String> param){
+    public void clientAction(@RequestBody Map<String, String> param){
         System.out.println(param);
+
+        //提取设备id
+        String deviceId = param.get("clientid");
+
+        if (param.get("action").equals("client_connected")){
+            //如果是联网
+            deviceService.updateOnline(deviceId, true);
+        }
+        if (param.get("action").equals("client_disconnected")){
+            //如果是断网
+            deviceService.updateOnline(deviceId, false);
+        }
     }
+
+
 }
