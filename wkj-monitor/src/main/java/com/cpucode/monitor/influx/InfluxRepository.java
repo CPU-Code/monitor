@@ -1,8 +1,12 @@
 package com.cpucode.monitor.influx;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
+import org.influxdb.impl.InfluxDBResultMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,5 +56,21 @@ public class InfluxRepository {
         influxDB.write(point);
 
         influxDB.close();
+    }
+
+    /**
+     * 通用查询数据方法
+     * @param sql 语句
+     * @param clazz 类转化
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> query(String sql, Class<T> clazz){
+        QueryResult queryResult = influxDB.query(new Query(sql, dbName));
+        influxDB.close();
+
+        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
+
+        return resultMapper.toPOJO(queryResult, clazz);
     }
 }
