@@ -135,3 +135,60 @@
 | online    | boolean  | 是否在线 |
 | status    | boolean  | 开关     |
 | tag       | keyword  | 标签     |
+
+
+## EMQ的配置文件
+
+
+**Event 触发事件:**
+
+目前支持以下事件： 
+
+| 名称                 | 说明         | 执行时机                                       |
+| -------------------- | ------------ | ---------------------------------------------- |
+| client.connect       | 处理连接报文 | 服务端收到客户端的连接报文时                   |
+| client.connack       | 下发连接应答 | 服务端准备下发连接应答报文时                   |
+| client.connected     | 成功接入     | 客户端认证完成并成功接入系统后                 |
+| client.disconnected  | 连接断开     | 客户端连接层在准备关闭时                       |
+| client.subscribe     | 订阅主题     | 收到订阅报文后，执行 `client.check_acl` 鉴权前 |
+| client.unsubscribe   | 取消订阅     | 收到取消订阅报文后                             |
+| session.subscribed   | 会话订阅主题 | 完成订阅操作后                                 |
+| session.unsubscribed | 会话取消订阅 | 完成取消订阅操作后                             |
+| message.publish      | 消息发布     | 服务端在发布（路由）消息前                     |
+| message.delivered    | 消息投递     | 消息准备投递到客户端前                         |
+| message.acked        | 消息回执     | 服务端在收到客户端发回的消息 ACK 后            |
+| message.dropped      | 消息丢弃     | 发布出的消息被丢弃后                           |
+
+**Number**
+
+同一个事件可以配置**多个触发规则**，配置相同的事件应当依次递增。
+
+**Rule**
+
+触发规则，其值为一个 JSON 字符串，其中可用的 Key 有：
+
+- action：字符串，取固定值
+- topic：字符串，表示一个**主题过滤器**，操作的主题只有与该主题匹配才能触发事件的转发
+
+例如，我们只将与 `a/b/c` 和 `foo/#` 主题匹配的消息转发到 Web 服务器上，其配置应该为：
+
+```bash
+web.hook.rule.message.publish.1 = {"action": "on_message_publish", "topic": "a/b/c"}
+web.hook.rule.message.publish.2 = {"action": "on_message_publish", "topic": "foo/#"}
+```
+
+这样 Webhook 仅会转发与 `a/b/c` 和 `foo/#` 主题匹配的消息，例如 `foo/bar` 等，而不是转发 `a/b/d` 或 `fo/bar`。
+
+
+
+EMQ的配置文件`etc/plugins/emqx_web_hook.conf`
+将接收地址配置到`web.hook.api.url`
+
+```bash
+##亿可控接收地址
+web.hook.api.url = http://192.168.3.xxxx:8000/device/clientAction
+
+##   web.hook.rule.<HookName>.<No> = <Spec>
+web.hook.rule.client.connected.1     = {"action": "on_client_connected"}
+web.hook.rule.client.disconnected.1  = {"action": "on_client_disconnected"}
+```

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @author : cpucode
  * @date : 2021/10/1 17:17
@@ -62,5 +64,14 @@ public class DeviceController {
                                      @RequestParam(value = "tag", required = false)
                                                  String tag){
         return deviceService.queryPage(page, pageSize, sn, tag,null);
+    }
+
+    /**
+     * 接收设备断连信息
+     * @param param
+     */
+    @PostMapping("/clientAction")
+    public void clientAction(@RequestBody Map<String,String> param){
+        System.out.println(param);
     }
 }

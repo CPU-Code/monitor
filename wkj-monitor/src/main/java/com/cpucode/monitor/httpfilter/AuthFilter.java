@@ -50,6 +50,12 @@ public class AuthFilter implements Filter{
             return;
         }
 
+        //如果是设备断链监控
+        if(path.equals("/device/clientAction")){
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         String authToken = ((HttpServletRequest) servletRequest).getHeader("Authorization");
 
         //如何header中不存在Authorization的值，直接返回校验失败
