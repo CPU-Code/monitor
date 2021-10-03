@@ -2,6 +2,7 @@ package com.cpucode;
 
 import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
+import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.service.AlarmService;
 import com.cpucode.monitor.service.QuotaService;
 import com.cpucode.monitor.util.JsonUtil;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,5 +76,20 @@ public class QuotaTest {
         }
 
         System.out.println(json);
+    }
+
+    /**
+     * 查找最新的 influxDB 设备警告
+     */
+    @Test
+    public void testFindLast(){
+        List<QuotaInfo> quotaList = quotaService.getLastQuotaList("100001");
+        try {
+            String json = JsonUtil.serialize(quotaList);
+
+            System.out.println(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }
