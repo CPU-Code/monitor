@@ -82,6 +82,9 @@ public class EmqMsgProcess implements MqttCallback {
 
             //保存设备信息
             deviceService.saveDeviceInfo(deviceInfoDTO.getDevice());
+
+            //保存指标数据
+            quotaService.saveQuotaToInflux(deviceInfoDTO.getQuotaList());
         }
     }
 

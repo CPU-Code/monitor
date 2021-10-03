@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.QuotaDTO;
+import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.entity.QuotaEntity;
+import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.mapper.QuotaMapper;
 import com.cpucode.monitor.service.QuotaService;
 import com.google.common.collect.Lists;
 import org.elasticsearch.common.Strings;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +28,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class QuotaServiceImpl extends ServiceImpl<QuotaMapper, QuotaEntity> implements QuotaService {
+
+    @Autowired
+    private InfluxRepository influxRepository;
+
     /**
      * 获取所有报文主题
      * @return 报文主题集合
@@ -119,5 +126,22 @@ public class QuotaServiceImpl extends ServiceImpl<QuotaMapper, QuotaEntity> impl
         deviceInfoDTO.setQuotaList(quotaDTOList);
 
         return deviceInfoDTO;
+    }
+
+    /***
+     * 保存指标数据到influxDb
+     * @param quotaDTOList
+     */
+    @Override
+    public void saveQuotaToInflux(List<QuotaDTO> quotaDTOList){
+        for (QuotaDTO quotaDTO : quotaDTOList){
+            QuotaInfo quotaInfo = new QuotaInfo();
+            //拷贝属性
+            BeanUtils.copyProperties(quotaDTO, quotaInfo);
+            //指标id
+            quotaInfo.setQuotaId(quotaDTO.getId() + "");
+
+            influxRepository.add(quotaInfo);
+        }
     }
 }

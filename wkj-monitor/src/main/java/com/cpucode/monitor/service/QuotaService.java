@@ -2,6 +2,7 @@ package com.cpucode.monitor.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
+import com.cpucode.monitor.dto.QuotaDTO;
 import com.cpucode.monitor.entity.QuotaEntity;
 
 import java.util.List;
@@ -27,4 +28,10 @@ public interface QuotaService extends IService<QuotaEntity> {
      * @return    设备（含指标列表）
      */
     DeviceInfoDTO analysis(String topic, Map<String, Object> payloadMap);
+
+    /***
+     * 保存指标数据到influxDb
+     * @param quotaDTOList
+     */
+    void saveQuotaToInflux(List<QuotaDTO> quotaDTOList);
 }
