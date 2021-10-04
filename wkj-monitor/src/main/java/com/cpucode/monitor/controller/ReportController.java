@@ -4,10 +4,7 @@ import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.ReportService;
-import com.cpucode.monitor.vo.LineVO;
-import com.cpucode.monitor.vo.MonitorVO;
-import com.cpucode.monitor.vo.Pager;
-import com.cpucode.monitor.vo.PieVO;
+import com.cpucode.monitor.vo.*;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -123,5 +120,29 @@ public class ReportController {
                                            @RequestParam(value = "quotaId")
                                                        String quotaId){
         return reportService.getDeviceByQuota(page, pageSize, quotaId);
+    }
+
+    /**
+     * 报表预览
+     * @param previewVO
+     * @return
+     */
+    @PostMapping("/preview")
+    public BoardQuotaVO getPreviewData( @RequestBody PreviewVO previewVO ){
+        BoardQuotaVO boardQuotaVO = reportService.getBoardData(previewVO.getQuotaId(),
+                previewVO.getDeviceIdList(),
+                previewVO.getStart(),
+                previewVO.getEnd(),
+                previewVO.getType());
+
+        //时间处理
+        List<String> xdata = Lists.newArrayList();
+        for (String x : boardQuotaVO.getXdata()){
+            xdata.add(formatTime(x, previewVO.getType()));
+        }
+
+        boardQuotaVO.setXdata(xdata);
+
+        return boardQuotaVO;
     }
 }
