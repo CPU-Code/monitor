@@ -23,7 +23,7 @@ public class ReportServiceImpl implements ReportService {
     private ESRepository esRepository;
 
     /**
-     * 获取设备的各种状态总和
+     * 设备状态分布
      * @return
      */
     @Override
