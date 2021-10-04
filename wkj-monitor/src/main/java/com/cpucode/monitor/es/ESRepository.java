@@ -340,6 +340,7 @@ public class ESRepository {
      */
     public Long getOfflineCount(){
         CountRequest countRequest = new CountRequest("devices");
+        // 条件
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.termQuery("online", false));
 
@@ -350,6 +351,30 @@ public class ESRepository {
 
             return response.getCount();
         }catch (IOException e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * 统计所有告警设备数量
+     * @return
+     */
+    public Long getAlarmCount(){
+        CountRequest countRequest = new CountRequest("devices");
+        // 条件
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(QueryBuilders.termQuery("online", true));
+        boolQueryBuilder.must(QueryBuilders.termQuery("alarm", true));
+
+        countRequest.query(boolQueryBuilder);
+
+        try{
+            // 查询
+            CountResponse response = restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
+
+            return response.getCount();
+        } catch (IOException e) {
             e.printStackTrace();
             return 0L;
         }
