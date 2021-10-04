@@ -1,6 +1,8 @@
 package com.cpucode.monitor.service.impl;
 
+import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
+import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.service.ReportService;
 import com.cpucode.monitor.vo.PieVO;
 import com.google.common.collect.Lists;
@@ -21,6 +23,9 @@ import java.util.List;
 public class ReportServiceImpl implements ReportService {
     @Autowired
     private ESRepository esRepository;
+
+    @Autowired
+    private InfluxRepository influxRepository;
 
     /**
      * 设备状态分布
@@ -53,5 +58,34 @@ public class ReportServiceImpl implements ReportService {
         pieVOList.add(alarmPie);
 
         return pieVOList;
+    }
+
+    /**
+     * 获取异常趋势指标
+     * @param start 开始时间 yyyy-MM-dd HH:mm:ss
+     * @param end 结束时间 yyyy-MM-dd HH:mm:ss
+     * @param type 时间统计类型(1:60分钟之内, 2:当天24小时, 3:7天内)
+     * @return
+     */
+    @Override
+    public List<TrendPoint> getAlarmTrend(String start, String end, int type){
+        StringBuilder sql = new StringBuilder("select count(value) as pointValue " +
+                "from quota " +
+                "where alarm = '1");
+
+        sql.append("and time >= '" + start + "' and time <= '" + end + "'");
+
+        if (type == 1){
+            sql.append("group by time(1m)");
+        }else if (type == 2){
+            sql.append("group by time(1h)");
+        }else if (type == 3){
+            sql.append("group by time(1d)");
+        }
+
+        List<TrendPoint> trendPointList =
+                influxRepository.query(sql.toString(), TrendPoint.class);
+
+        return trendPointList;
     }
 }

@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service;
 
+import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.vo.PieVO;
 
 import java.util.List;
@@ -18,4 +19,13 @@ public interface ReportService {
      * @return
      */
     List<PieVO> getStatusCollect();
+
+    /**
+     * 获取异常趋势指标
+     * @param start 开始时间 yyyy-MM-dd HH:mm:ss
+     * @param end 结束时间 yyyy-MM-dd HH:mm:ss
+     * @param type 时间统计类型(1:60分钟之内, 2:当天24小时, 3:7天内)
+     * @return
+     */
+    List<TrendPoint> getAlarmTrend(String start, String end, int type);
 }
