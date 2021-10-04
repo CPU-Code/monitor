@@ -2,6 +2,7 @@ package com.cpucode.monitor.service;
 
 import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
+import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.PieVO;
 
 import java.util.List;
@@ -37,4 +38,13 @@ public interface ReportService {
      * @return
      */
     List<HeapPoint> getTop10Alarm(String startTime, String endTime);
+
+    /**
+     * 通过指标获取关联设备
+     * @param page 页数
+     * @param pageSize 页码
+     * @param quotaId 指标id
+     * @return
+     */
+    Pager<String> getDeviceByQuota(Long page, Long pageSize, String quotaId);
 }

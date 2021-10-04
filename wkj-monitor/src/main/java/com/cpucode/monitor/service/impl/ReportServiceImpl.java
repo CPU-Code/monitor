@@ -1,10 +1,13 @@
 package com.cpucode.monitor.service.impl;
 
 import com.cpucode.monitor.dto.HeapPoint;
+import com.cpucode.monitor.dto.QuotaCount;
+import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.service.ReportService;
+import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.PieVO;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author : cpucode
@@ -110,5 +114,49 @@ public class ReportServiceImpl implements ReportService {
         sql.append("' group by deviceId, quotaId) order by desc");
 
         return influxRepository.query(sql.toString(), HeapPoint.class);
+    }
+
+    /**
+     * 通过指标获取关联设备
+     * @param page 页数
+     * @param pageSize 页码
+     * @param quotaId 指标id
+     * @return
+     */
+    @Override
+    public Pager<String> getDeviceByQuota(Long page, Long pageSize, String quotaId){
+        String fromQl = " from ( select deviceId, value " +
+                "from quota " +
+                "where quotaId = '" + quotaId + "' " +
+                "group by deviceId, quotaId)";
+        String listQl = "select distinct(devicesId) as deviceId " + fromQl +
+                "limit" + pageSize + "offset" + (page - 1) * pageSize;
+
+        String countQl = "select count(distinct(deviceId)) as count" + fromQl;
+
+        List<QuotaInfo> quotaInfoList = influxRepository.query(listQl, QuotaInfo.class);
+
+        //设备id列表
+        List<String> deviceIdList = quotaInfoList.stream().map(quotaInfo ->
+            quotaInfo.getDeviceId()
+        ).collect(Collectors.toList());
+
+        //统计记录个数
+        List<QuotaCount> quotaCountList =
+                influxRepository.query(countQl, QuotaCount.class);
+
+        // 校验空值
+        if( quotaCountList == null || quotaCountList.size() == 0 ){
+            Pager<String> pager = new Pager<String>(0L, 0L);
+            pager.setItems(Lists.newArrayList());
+
+            return pager;
+        }
+
+        Long count = quotaCountList.get(0).getCount();
+
+        Pager<String> pager = new Pager<String>(count, pageSize);
+        pager.setItems(deviceIdList);
+        return pager;
     }
 }
