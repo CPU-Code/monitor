@@ -3,6 +3,7 @@ package com.cpucode;
 import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.QuotaInfo;
+import com.cpucode.monitor.dto.TrendPoint2;
 import com.cpucode.monitor.service.AlarmService;
 import com.cpucode.monitor.service.QuotaService;
 import com.cpucode.monitor.util.JsonUtil;
@@ -92,4 +93,6 @@ public class QuotaTest {
             e.printStackTrace();
         }
     }
+
+
 }

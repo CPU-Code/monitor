@@ -2,6 +2,7 @@ package com.cpucode.monitor.service;
 
 import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
+import com.cpucode.monitor.dto.TrendPoint2;
 import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.PieVO;
 
@@ -47,4 +48,15 @@ public interface ReportService {
      * @return
      */
     Pager<String> getDeviceByQuota(Long page, Long pageSize, String quotaId);
+
+    /**
+     * 获取指标趋势
+     * @param start 开始时间 yyyy-MM-dd HH:mm:ss
+     * @param end 结束时间 yyyy-MM-dd HH:mm:ss
+     * @param quotaId 指标Id
+     * @param type 时间统计类型(1:60分钟之内,2:当天24小时,3:7天内)
+     * @param deviceId 设备编码
+     * @return
+     */
+    List<TrendPoint2> getQuotaTrend(String start, String end, String quotaId, String deviceId, int type);
 }

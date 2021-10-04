@@ -2,6 +2,7 @@ package com.cpucode;
 
 import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.TrendPoint;
+import com.cpucode.monitor.dto.TrendPoint2;
 import com.cpucode.monitor.service.ReportService;
 import com.cpucode.monitor.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,6 +41,22 @@ public class ReportTest {
                 e.printStackTrace();
             }
         }
+    }
 
+    /**
+     * 查询折线图类
+     */
+    @Test
+    public void testQuotaTrend(){
+        List<TrendPoint2> trendPoint2List =
+                reportService.getQuotaTrend("2020-09-01 00:00:00", "2020-09-30 23:59:59", "1", "100001", 3);
+
+        for( TrendPoint2 trendPoint2 : trendPoint2List ){
+            try {
+                System.out.println( JsonUtil.serialize(trendPoint2) );
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

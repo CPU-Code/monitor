@@ -1,9 +1,6 @@
 package com.cpucode.monitor.service.impl;
 
-import com.cpucode.monitor.dto.HeapPoint;
-import com.cpucode.monitor.dto.QuotaCount;
-import com.cpucode.monitor.dto.QuotaInfo;
-import com.cpucode.monitor.dto.TrendPoint;
+import com.cpucode.monitor.dto.*;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.service.ReportService;
@@ -158,5 +155,36 @@ public class ReportServiceImpl implements ReportService {
         Pager<String> pager = new Pager<String>(count, pageSize);
         pager.setItems(deviceIdList);
         return pager;
+    }
+
+    /**
+     * 获取指标趋势
+     * @param start 开始时间 yyyy-MM-dd HH:mm:ss
+     * @param end 结束时间 yyyy-MM-dd HH:mm:ss
+     * @param quotaId 指标Id
+     * @param type 时间统计类型(1:60分钟之内,2:当天24小时,3:7天内)
+     * @param deviceId 设备编码
+     * @return
+     */
+    @Override
+    public List<TrendPoint2> getQuotaTrend(String start, String end, String quotaId, String deviceId, int type){
+        StringBuilder ql = new StringBuilder("select first(value) as pointValue from quota");
+        ql.append("where time >= '" + start +"' and time <= '" + end + "'");
+        ql.append("and quotaId = '" + quotaId + "'");
+        ql.append("and deviceId = '" + deviceId + "'");
+
+        if (type == 1){
+            //1小时
+            ql.append("group by time(1m)");
+        } else if (type == 2){
+            //1天
+            ql.append("group by time(1h)");
+        }else if (type == 3){
+            //7天
+            ql.append("group by time(1d)");
+        }
+
+        List<TrendPoint2> trendPoint2List = influxRepository.query(ql.toString(), TrendPoint2.class);
+        return trendPoint2List;
     }
 }
