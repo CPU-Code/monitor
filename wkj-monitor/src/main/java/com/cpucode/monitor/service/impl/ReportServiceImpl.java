@@ -4,6 +4,8 @@ import com.cpucode.monitor.dto.*;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.influx.InfluxRepository;
 import com.cpucode.monitor.service.ReportService;
+import com.cpucode.monitor.vo.BoardQuotaData;
+import com.cpucode.monitor.vo.BoardQuotaVO;
 import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.PieVO;
 import com.google.common.collect.Lists;
@@ -220,5 +222,50 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return trendPoint2List;
+    }
+
+    /**
+     * 指标趋势图
+     * @param quotaId 指标id
+     * @param deviceIds 设备id集合
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param type 类型
+     * @return
+     */
+    @Override
+    public BoardQuotaVO getBoardData(String quotaId, List<String> deviceIds, String startTime, String endTime, Integer type){
+        //参数校验
+        if (quotaId == null || deviceIds == null || deviceIds.size() == 0){
+            return new BoardQuotaVO();
+        }
+
+        BoardQuotaVO boardQuotaVO = new BoardQuotaVO();
+        boardQuotaVO.setSeries(Lists.newArrayList());
+
+        for (String deviceId : deviceIds){
+            //循环每个设备
+
+            //每个设备的指标趋势
+            List<TrendPoint2> trendPoint2List = getQuotaTrend(startTime, endTime, quotaId, deviceId, type);
+
+            //x轴
+            if (boardQuotaVO.getXdata() == null){
+                boardQuotaVO.setXdata(trendPoint2List.stream().map(
+                        trendPoint2 -> trendPoint2.getTime()
+                ).collect(Collectors.toList()));
+            }
+
+            //数据
+            BoardQuotaData boardQuotaData = new BoardQuotaData();
+            boardQuotaData.setName(deviceId);
+            boardQuotaData.setData(trendPoint2List.stream().map(
+                    trendPoint2 -> trendPoint2.getPointValue()
+            ).collect(Collectors.toList()));
+
+            boardQuotaVO.getSeries().add(boardQuotaData);
+        }
+
+        return boardQuotaVO;
     }
 }

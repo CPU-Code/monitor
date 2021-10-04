@@ -3,6 +3,7 @@ package com.cpucode.monitor.service;
 import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.dto.TrendPoint2;
+import com.cpucode.monitor.vo.BoardQuotaVO;
 import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.PieVO;
 
@@ -59,4 +60,15 @@ public interface ReportService {
      * @return
      */
     List<TrendPoint2> getQuotaTrend(String start, String end, String quotaId, String deviceId, int type);
+
+    /**
+     * 指标趋势图
+     * @param quotaId 指标id
+     * @param deviceIds 设备id集合
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param type 类型
+     * @return
+     */
+    BoardQuotaVO getBoardData(String quotaId, List<String> deviceIds, String startTime, String endTime, Integer type);
 }
