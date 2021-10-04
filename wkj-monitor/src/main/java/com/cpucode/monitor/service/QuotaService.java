@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.QuotaDTO;
@@ -42,4 +43,12 @@ public interface QuotaService extends IService<QuotaEntity> {
      * @return
      */
     List<QuotaInfo> getLastQuotaList(String deviceId);
+
+    /**
+     * 分页加载所有数值型指标
+     * @param page 页数
+     * @param pageSize 页码
+     * @return
+     */
+    IPage<QuotaEntity> queryNumberQuota(Long page, Long pageSize);
 }

@@ -1,6 +1,9 @@
 package com.cpucode.monitor.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
@@ -156,5 +159,23 @@ public class QuotaServiceImpl extends ServiceImpl<QuotaMapper, QuotaEntity> impl
                 "from quota where deviceId = '" + deviceId +
                 "' group by quotaId";
         return influxRepository.query(sql, QuotaInfo.class);
+    }
+
+    /**
+     * 分页加载所有数值型指标
+     * @param page 页数
+     * @param pageSize 页码
+     * @return
+     */
+    @Override
+    public IPage<QuotaEntity> queryNumberQuota(Long page, Long pageSize) {
+        Page<QuotaEntity> pageResult = new Page<>(page, pageSize);
+        LambdaQueryWrapper<QuotaEntity> wrapper = new LambdaQueryWrapper<>();
+
+        wrapper.eq(QuotaEntity::getValueType, "Long")
+                .or().eq(QuotaEntity::getValueType, "Integer")
+                .or().eq(QuotaEntity::getValueType,"Double");
+
+        return this.page(pageResult, wrapper);
     }
 }

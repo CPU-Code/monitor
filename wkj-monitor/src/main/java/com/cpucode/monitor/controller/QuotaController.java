@@ -3,15 +3,13 @@ package com.cpucode.monitor.controller;
 import com.cpucode.monitor.emq.EmqClient;
 import com.cpucode.monitor.entity.QuotaEntity;
 import com.cpucode.monitor.service.QuotaService;
+import com.cpucode.monitor.vo.Pager;
 import com.cpucode.monitor.vo.QuotaVO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author : cpucode
@@ -51,5 +49,19 @@ public class QuotaController {
 
         // 插入数据
         return quotaService.save(quotaEntity);
+    }
+
+    /**
+     * 分页获取数值型指标
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/numberQuota")
+    public Pager<QuotaEntity> queryNumberQuota(@RequestParam(value = "page", required = false, defaultValue = "1")
+                                                           Long page,
+                                               @RequestParam(value = "pageSize", required = false, defaultValue = "10")
+                                                       Long pageSize){
+        return new Pager<>(quotaService.queryNumberQuota(page, pageSize));
     }
 }
