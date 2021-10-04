@@ -12,8 +12,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -310,6 +313,24 @@ public class ESRepository {
             log.error("查询设备异常");
 
             return null;
+        }
+    }
+
+    /**
+     * 统计所有设备数量
+     * @return
+     */
+    public Long getAllDeviceCount(){
+        CountRequest countRequest = new CountRequest("devices");
+        countRequest.query(QueryBuilders.matchAllQuery());
+
+        try{
+            CountResponse response = restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
+            return response.getCount();
+        } catch (IOException e){
+            e.printStackTrace();
+
+            return 0L;
         }
     }
 }
