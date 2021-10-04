@@ -2,10 +2,12 @@ package com.cpucode.monitor.controller;
 
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.service.DeviceService;
+import com.cpucode.monitor.vo.DeviceQuotaVO;
 import com.cpucode.monitor.vo.DeviceVO;
 import com.cpucode.monitor.vo.Pager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -85,6 +87,28 @@ public class DeviceController {
             //如果是断网
             deviceService.updateOnline(deviceId, false);
         }
+    }
+
+    /**
+     * 查询设备详情
+     * @param page 页数
+     * @param pageSize 页码
+     * @param deviceId 设备id
+     * @param tag 标签
+     * @param state 启用
+     * @return
+     */
+    public Pager<DeviceQuotaVO> queryQuotaData(@RequestParam(value="page",required = false,defaultValue = "1")
+                                                       Long page,
+                                              @RequestParam(value = "pageSize",required = false,defaultValue = "10")
+                                                      Long pageSize,
+                                              @RequestParam(value = "deviceId",required = false)
+                                                       String deviceId,
+                                              @RequestParam(value = "tag",required = false)
+                                                       String tag,
+                                              @RequestParam(value = "state",required = false)
+                                                       Integer state){
+        return deviceService.queryDeviceQuota(page, pageSize, deviceId, tag, state);
     }
 
 

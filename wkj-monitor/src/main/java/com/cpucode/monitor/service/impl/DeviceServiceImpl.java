@@ -161,12 +161,14 @@ public class DeviceServiceImpl implements DeviceService {
 
         //2.查询指标列表
         List<DeviceQuotaVO> deviceQuotaVOList = Lists.newArrayList();
+
         pager.getItems().forEach(deviceDTO -> {
-            DeviceQuotaVO deviceQuotaVO=new DeviceQuotaVO();
-            BeanUtils.copyProperties(deviceDTO, deviceQuotaVO );
+            DeviceQuotaVO deviceQuotaVO = new DeviceQuotaVO();
+            BeanUtils.copyProperties(deviceDTO, deviceQuotaVO);
             //查询指标
             List<QuotaInfo> quotaList = quotaService.getLastQuotaList(deviceDTO.getDeviceId());
             deviceQuotaVO.setQuotaList(quotaList);
+
             deviceQuotaVOList.add(deviceQuotaVO);
         });
 
