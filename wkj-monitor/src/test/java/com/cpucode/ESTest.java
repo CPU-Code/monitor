@@ -84,4 +84,22 @@ public class ESTest {
     public void testOnline(){
         esRepository.updateOnline("123456",false);
     }
+
+    /**
+     * 获取总数
+     */
+    @Test
+    public void testCount(){
+        //设备总数
+        Long allDeviceCount = esRepository.getAllDeviceCount();
+        System.out.println("设备总数：" + allDeviceCount);
+
+        //离线设备数量
+        Long offlineCount = esRepository.getOfflineCount();
+        System.out.println("离线设备：" + offlineCount);
+
+        //告警设备数量
+        Long alarmCount = esRepository.getAlarmCount();
+        System.out.println("告警设备：" + alarmCount);
+    }
 }
