@@ -333,4 +333,25 @@ public class ESRepository {
             return 0L;
         }
     }
+
+    /**
+     * 统计所有离线设备数量
+     * @return
+     */
+    public Long getOfflineCount(){
+        CountRequest countRequest = new CountRequest("devices");
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(QueryBuilders.termQuery("online", false));
+
+        countRequest.query(boolQueryBuilder);
+
+        try{
+            CountResponse response = restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
+
+            return response.getCount();
+        }catch (IOException e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
 }
