@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -67,10 +69,31 @@ public class ReportController {
         lineVO.setSeries(Lists.newArrayList());
 
         trendPoints.forEach(t ->{
-            lineVO.getXdata().add(t.getTime());
+            lineVO.getXdata().add(formatTime(t.getTime(), type));
             lineVO.getSeries().add(t.getPointValue().longValue());
         });
 
         return lineVO;
+    }
+
+    /**
+     * 格式化日期串
+     * @param time 时间
+     * @param type 类型
+     * @return
+     */
+    private String formatTime(String time,int type){
+        LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        if (type == 1){
+            return localDateTime.getMinute() + "";
+        }else if (type == 2){
+            return localDateTime.getHour() + "";
+        }else if (type == 3){
+            return localDateTime.getMonthValue() + "月" +
+                    localDateTime.getDayOfMonth() + "日";
+        }
+
+        return time;
     }
 }
