@@ -185,6 +185,40 @@ public class ReportServiceImpl implements ReportService {
         }
 
         List<TrendPoint2> trendPoint2List = influxRepository.query(ql.toString(), TrendPoint2.class);
+        return replenish(trendPoint2List);
+    }
+
+    /**
+     * 填充数据
+     * @param trendPoint2List
+     * @return
+     */
+    private List<TrendPoint2> replenish(List<TrendPoint2> trendPoint2List){
+        // 上一个值
+        Double previousValue = null;
+
+        // 找到第一个值
+        for (TrendPoint2 trendPoint2 : trendPoint2List){
+            if (trendPoint2.getPointValue() != null){
+                previousValue = trendPoint2.getPointValue();
+
+                break;
+            }
+        }
+
+        if (previousValue == null){
+            previousValue = 0D;
+        }
+
+        //数据填充逻辑
+        for (TrendPoint2 trendPoint2 : trendPoint2List){
+            if (trendPoint2.getPointValue() == null){
+                trendPoint2.setPointValue(previousValue);
+            }
+
+            previousValue = trendPoint2.getPointValue();
+        }
+
         return trendPoint2List;
     }
 }
