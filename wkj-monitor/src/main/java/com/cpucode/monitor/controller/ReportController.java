@@ -1,11 +1,15 @@
 package com.cpucode.monitor.controller;
 
+import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.ReportService;
+import com.cpucode.monitor.vo.LineVO;
 import com.cpucode.monitor.vo.MonitorVO;
 import com.cpucode.monitor.vo.PieVO;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,5 +50,27 @@ public class ReportController {
         monitor.setAlarmCount(esRepository.getAlarmCount());
 
         return monitor;
+    }
+
+    /**
+     * 获取告警趋势
+     * @return
+     */
+    @GetMapping("/trend/{startTime}/{endTime}/{type}")
+    public LineVO getQuotaTrendCollect(@PathVariable String startTime,
+                                       @PathVariable String endTime,
+                                       @PathVariable Integer type){
+        List<TrendPoint> trendPoints = reportService.getAlarmTrend(startTime, endTime, type);
+
+        LineVO lineVO = new LineVO();
+        lineVO.setXdata(Lists.newArrayList());
+        lineVO.setSeries(Lists.newArrayList());
+
+        trendPoints.forEach(t ->{
+            lineVO.getXdata().add(t.getTime());
+            lineVO.getSeries().add(t.getPointValue().longValue());
+        });
+
+        return lineVO;
     }
 }
