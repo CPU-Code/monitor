@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service;
 
+import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.vo.PieVO;
 
@@ -28,4 +29,12 @@ public interface ReportService {
      * @return
      */
     List<TrendPoint> getAlarmTrend(String start, String end, int type);
+
+    /**
+     * 获取一定时间范围之内的报警次数最多的设备指标
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    List<HeapPoint> getTop10Alarm(String startTime, String endTime);
 }

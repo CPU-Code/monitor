@@ -1,5 +1,6 @@
 package com.cpucode.monitor.controller;
 
+import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.ReportService;
@@ -95,5 +96,17 @@ public class ReportController {
         }
 
         return time;
+    }
+
+    /**
+     * 获取一定时间范围之内的报警次数最多的设备指标
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @GetMapping("/top10Alarm/{startTime}/{endTime}")
+    public List<HeapPoint> getTop10Alarm(@PathVariable String startTime,
+                                         @PathVariable String endTime){
+        return reportService.getTop10Alarm(startTime, endTime);
     }
 }

@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service.impl;
 
+import com.cpucode.monitor.dto.HeapPoint;
 import com.cpucode.monitor.dto.TrendPoint;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.influx.InfluxRepository;
@@ -87,5 +88,27 @@ public class ReportServiceImpl implements ReportService {
                 influxRepository.query(sql.toString(), TrendPoint.class);
 
         return trendPointList;
+    }
+
+    /**
+     * 获取一定时间范围之内的报警次数最多的设备指标
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @Override
+    public List<HeapPoint> getTop10Alarm(String startTime, String endTime){
+        StringBuilder sql =
+                new StringBuilder("select top(heapValue, deviceId, quotaId, quotaName, 10) as heapValue" +
+                        "from(select count(value) as heapValue " +
+                        "from quota where alarm = '1'");
+
+        sql.append("and time >= '");
+        sql.append(startTime);
+        sql.append("' and time <= '");
+        sql.append(endTime);
+        sql.append("' group by deviceId, quotaId) order by desc");
+
+        return influxRepository.query(sql.toString(), HeapPoint.class);
     }
 }
