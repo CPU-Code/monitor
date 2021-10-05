@@ -2,12 +2,12 @@ package com.cpucode.monitor.controller;
 
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.service.DeviceService;
+import com.cpucode.monitor.service.NoticeService;
 import com.cpucode.monitor.vo.DeviceQuotaVO;
 import com.cpucode.monitor.vo.DeviceVO;
 import com.cpucode.monitor.vo.Pager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -25,6 +25,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private NoticeService noticeService;
 
     /**
      * 更改设备状态
@@ -82,10 +85,14 @@ public class DeviceController {
         if (param.get("action").equals("client_connected")){
             //如果是联网
             deviceService.updateOnline(deviceId, true);
+            //联网透传
+            noticeService.onlineTransfer(deviceId, true);
         }
         if (param.get("action").equals("client_disconnected")){
             //如果是断网
             deviceService.updateOnline(deviceId, false);
+            //断网透传
+            noticeService.onlineTransfer(deviceId, false);
         }
     }
 

@@ -19,4 +19,9 @@ public class WebHookConfig {
      * 断连透传
      */
     private String online;
+
+    /**
+     *
+     */
+    private String gps;
 }
