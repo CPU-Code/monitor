@@ -3,10 +3,7 @@ package com.cpucode.monitor.emq;
 import com.cpucode.monitor.dto.DeviceInfoDTO;
 import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.es.ESRepository;
-import com.cpucode.monitor.service.AlarmService;
-import com.cpucode.monitor.service.DeviceService;
-import com.cpucode.monitor.service.GpsService;
-import com.cpucode.monitor.service.QuotaService;
+import com.cpucode.monitor.service.*;
 import com.cpucode.monitor.util.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +42,10 @@ public class EmqMsgProcess implements MqttCallback {
 
     @Autowired
     private ESRepository esRepository;
+
+    @Autowired
+    private NoticeService noticeService;
+
     /**
      * 连接丢失时调用
      * @param throwable
@@ -94,6 +95,9 @@ public class EmqMsgProcess implements MqttCallback {
 
             //保存指标数据
             quotaService.saveQuotaToInflux(deviceInfoDTO.getQuotaList());
+
+            //---------指标数据透传----------------------
+            noticeService.quotaTransfer(deviceInfoDTO.getQuotaList());
         }
 
         //处理gps数据
