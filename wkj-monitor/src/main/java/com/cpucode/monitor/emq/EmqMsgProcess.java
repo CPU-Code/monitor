@@ -1,9 +1,13 @@
 package com.cpucode.monitor.emq;
 
 import com.cpucode.monitor.dto.DeviceInfoDTO;
+import com.cpucode.monitor.dto.DeviceLocation;
+import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.service.AlarmService;
 import com.cpucode.monitor.service.DeviceService;
+import com.cpucode.monitor.service.GpsService;
 import com.cpucode.monitor.service.QuotaService;
+import com.cpucode.monitor.util.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -35,6 +39,9 @@ public class EmqMsgProcess implements MqttCallback {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private GpsService gpsService;
 
     /**
      * 连接丢失时调用
@@ -85,6 +92,12 @@ public class EmqMsgProcess implements MqttCallback {
 
             //保存指标数据
             quotaService.saveQuotaToInflux(deviceInfoDTO.getQuotaList());
+        }
+
+        //处理gps数据
+        DeviceLocation analysis = gpsService.analysis(s, payloadMap);
+        if(analysis != null){
+            System.out.println("gps解析结果：" + JsonUtil.serialize(analysis));
         }
     }
 
