@@ -16,7 +16,9 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -394,6 +397,58 @@ public class ESRepository {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
         }catch (Exception e){
             log.error("update es error",e);
+        }
+    }
+
+    /**
+     * 搜索一定距离之内的设备
+     * @param lat 纬度
+     * @param lon 经度
+     * @param distance  距离坐标点半径
+     * @return
+     */
+    public List<DeviceLocation> searchDeviceLocation(Double lat, Double lon, Integer distance){
+        SearchRequest searchRequest = new SearchRequest("gps");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        //中心点及半径构建
+        GeoDistanceQueryBuilder geoDistanceQueryBuilder = new GeoDistanceQueryBuilder("location");
+        geoDistanceQueryBuilder.distance(distance, DistanceUnit.KILOMETERS);
+        geoDistanceQueryBuilder.point(lat, lon);
+
+        searchSourceBuilder.query(geoDistanceQueryBuilder);
+
+        //只取前200个
+        searchSourceBuilder.from(0);
+        searchSourceBuilder.size(200);
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse searchResponse =
+                    restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits hits = searchResponse.getHits();
+            // 获取总数
+            if(hits.getTotalHits().value <= 0){
+                return Lists.newArrayList();
+            }
+
+            List<DeviceLocation> deviceLocationList = Lists.newArrayList();
+
+            Arrays.stream(hits.getHits()).forEach(h->{
+                DeviceLocation deviceLocation = new DeviceLocation();
+                // 设备信息
+                deviceLocation.setDeviceId(h.getId());
+                // 位置信息
+                deviceLocation.setLocation(h.getSourceAsMap().get("location").toString());
+
+                deviceLocationList.add(deviceLocation);
+            });
+
+            return deviceLocationList;
+        }catch (IOException e) {
+            log.error("search location error",e);
+
+            return Lists.newArrayList();
         }
     }
 }

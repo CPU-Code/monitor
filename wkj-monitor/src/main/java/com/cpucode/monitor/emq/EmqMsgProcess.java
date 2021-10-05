@@ -43,6 +43,8 @@ public class EmqMsgProcess implements MqttCallback {
     @Autowired
     private GpsService gpsService;
 
+    @Autowired
+    private ESRepository esRepository;
     /**
      * 连接丢失时调用
      * @param throwable
@@ -98,6 +100,8 @@ public class EmqMsgProcess implements MqttCallback {
         DeviceLocation analysis = gpsService.analysis(s, payloadMap);
         if(analysis != null){
             System.out.println("gps解析结果：" + JsonUtil.serialize(analysis));
+
+            esRepository.saveLocation(analysis);
         }
     }
 
