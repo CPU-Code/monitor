@@ -16,6 +16,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
@@ -24,6 +25,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -415,8 +417,16 @@ public class ESRepository {
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = new GeoDistanceQueryBuilder("location");
         geoDistanceQueryBuilder.distance(distance, DistanceUnit.KILOMETERS);
         geoDistanceQueryBuilder.point(lat, lon);
-
         searchSourceBuilder.query(geoDistanceQueryBuilder);
+
+        //从近到远排序规则构建
+        GeoDistanceSortBuilder distanceSortBuilder = new GeoDistanceSortBuilder("location", lat, lon);
+        distanceSortBuilder.unit(DistanceUnit.KILOMETERS);
+        //SortOrder.ASC 升序（由近到远)
+        distanceSortBuilder.order(SortOrder.ASC);
+        //GeoDistance.ARC  精准度高，计算较慢
+        distanceSortBuilder.geoDistance(GeoDistance.ARC);
+        searchSourceBuilder.sort(distanceSortBuilder);
 
         //只取前200个
         searchSourceBuilder.from(0);
