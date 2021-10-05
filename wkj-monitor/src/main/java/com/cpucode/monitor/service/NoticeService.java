@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service;
 
+import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.dto.QuotaDTO;
 
 import java.util.List;
@@ -25,4 +26,10 @@ public interface NoticeService {
      * @param online
      */
     void onlineTransfer(String deviceId, Boolean online);
+
+    /**
+     * gps透传
+     * @param deviceLocation
+     */
+    void gpsTransfer(DeviceLocation deviceLocation);
 }

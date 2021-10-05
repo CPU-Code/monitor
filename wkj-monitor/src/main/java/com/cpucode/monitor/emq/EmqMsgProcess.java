@@ -102,11 +102,13 @@ public class EmqMsgProcess implements MqttCallback {
 
         //处理gps数据
         DeviceLocation analysis = gpsService.analysis(s, payloadMap);
+
         if(analysis != null){
             System.out.println("gps解析结果：" + JsonUtil.serialize(analysis));
-
             esRepository.saveLocation(analysis);
+            noticeService.gpsTransfer(analysis);
         }
+
     }
 
     @Override

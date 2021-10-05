@@ -21,7 +21,7 @@ public class WebHookConfig {
     private String online;
 
     /**
-     *
+     * 设备定位透传地址
      */
     private String gps;
 }

@@ -2,6 +2,7 @@ package com.cpucode.monitor.service.impl;
 
 import com.cpucode.common.SystemDefinition;
 import com.cpucode.monitor.config.WebHookConfig;
+import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.dto.QuotaDTO;
 import com.cpucode.monitor.service.NoticeService;
 import com.cpucode.monitor.util.HttpUtil;
@@ -66,6 +67,17 @@ public class NoticeServiceImpl implements NoticeService {
             map.put("online", online);
 
             HttpUtil.httpPost(webHookConfig.getOnline(), map);
+        }
+    }
+
+    /**
+     * gps透传
+     * @param deviceLocation
+     */
+    @Override
+    public void gpsTransfer(DeviceLocation deviceLocation){
+        if(!Strings.isNullOrEmpty(webHookConfig.getGps())){
+            HttpUtil.httpPost(webHookConfig.getGps(), deviceLocation);
         }
     }
 }
