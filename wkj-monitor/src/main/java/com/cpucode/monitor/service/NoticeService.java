@@ -18,4 +18,11 @@ public interface NoticeService {
      * @param quotaDTOList
      */
     void quotaTransfer(List<QuotaDTO> quotaDTOList);
+
+    /**
+     * 断连透传
+     * @param deviceId
+     * @param online
+     */
+    void onlineTransfer(String deviceId, Boolean online);
 }

@@ -1,14 +1,17 @@
 package com.cpucode.monitor.service.impl;
 
 import com.cpucode.common.SystemDefinition;
+import com.cpucode.monitor.config.WebHookConfig;
 import com.cpucode.monitor.dto.QuotaDTO;
 import com.cpucode.monitor.service.NoticeService;
 import com.cpucode.monitor.util.HttpUtil;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,6 +24,8 @@ public class NoticeServiceImpl implements NoticeService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private WebHookConfig webHookConfig;
 
     /**
      * 指标数据透传
@@ -28,7 +33,7 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public void quotaTransfer(List<QuotaDTO> quotaDTOList) {
-        for( QuotaDTO quotaDTO:quotaDTOList ){
+        for( QuotaDTO quotaDTO : quotaDTOList ){
             if(!Strings.isNullOrEmpty(quotaDTO.getWebhook())){
                 //如果钩子非空，则做数据透传
                 HttpUtil.httpPost(quotaDTO.getWebhook(), quotaDTO);
@@ -45,6 +50,22 @@ public class NoticeServiceImpl implements NoticeService {
                 }
 
             }
+        }
+    }
+
+    /**
+     * 断连透传
+     * @param deviceId
+     * @param online
+     */
+    @Override
+    public void onlineTransfer(String deviceId, Boolean online){
+        if(!Strings.isNullOrEmpty(webHookConfig.getOnline())){
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("deviceId", deviceId);
+            map.put("online", online);
+
+            HttpUtil.httpPost(webHookConfig.getOnline(), map);
         }
     }
 }
