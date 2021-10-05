@@ -79,6 +79,10 @@ public class NoticeServiceImpl implements NoticeService {
 
             HttpUtil.httpPost(webHookConfig.getOnline(), map);
         }
+
+        if(!online){
+            disconnectionAlarm(deviceId);
+        }
     }
 
     /**
@@ -107,6 +111,30 @@ public class NoticeServiceImpl implements NoticeService {
         alarmMsg.setOnline(true);
 
         //发送到 emq
+        try {
+            emqClient.publish("/device/alarm", JsonUtil.serialize(alarmMsg));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 断网警告
+     * @param deviceId
+     */
+    private void disconnectionAlarm(String deviceId){
+        //以web开头的client为系统前端, monitor开头的是物联网中台服务端
+        if(deviceId.startsWith("webclient") || deviceId.startsWith("monitor")){
+            return;
+        }
+
+        AlarmMsg alarmMsg = new AlarmMsg();
+        alarmMsg.setLevel(1);
+        alarmMsg.setAlarmName("设备断网");
+        alarmMsg.setDeviceId(deviceId);
+        alarmMsg.setOnline(false);
+
+        //发送到emq
         try {
             emqClient.publish("/device/alarm", JsonUtil.serialize(alarmMsg));
         } catch (JsonProcessingException e) {
