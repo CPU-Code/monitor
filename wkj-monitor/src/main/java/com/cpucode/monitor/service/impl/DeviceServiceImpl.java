@@ -1,5 +1,6 @@
 package com.cpucode.monitor.service.impl;
 
+import com.cpucode.common.SystemDefinition;
 import com.cpucode.monitor.dto.DeviceDTO;
 import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.es.ESRepository;
@@ -11,6 +12,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +31,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     private QuotaService quotaService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 更改设备状态
@@ -52,8 +57,14 @@ public class DeviceServiceImpl implements DeviceService {
             return false;
         }
 
+        boolean b = esRepository.updateStatus(deviceId, status);
+
+        //刷新到缓存
+        deviceDTO.setStatus(status);
+        refreshDevice(deviceDTO);
+
         //更新数据
-        return esRepository.updateStatus(deviceId, status);
+        return b;
     }
 
 
@@ -118,6 +129,9 @@ public class DeviceServiceImpl implements DeviceService {
             esRepository.updateDevicesAlarm(deviceDTO);
         }
 
+        //刷新到缓存
+        refreshDevice(deviceDTO);
+
         return true;
     }
 
@@ -129,7 +143,6 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void updateOnline(String deviceId, Boolean online){
         //以webclient开头的client为系统前端, monitor开头的是亿可控服务端
-
         if(deviceId.startsWith("webclient") ||
                 deviceId.startsWith("monitor")){
             return;
@@ -141,8 +154,11 @@ public class DeviceServiceImpl implements DeviceService {
             return;
         }
 
-        deviceDTO.setOnline(online);
         esRepository.updateOnline(deviceId, online);
+
+        //刷新到缓存
+        deviceDTO.setOnline(online);
+        refreshDevice(deviceDTO);
     }
 
     /**
@@ -186,8 +202,27 @@ public class DeviceServiceImpl implements DeviceService {
      */
     private DeviceDTO findDevice(String deviceId){
         // 根据设备id 查询数据 TODO: redis缓存查询
-        DeviceDTO deviceDTO = esRepository.searchDeviceById(deviceId);
+
+        DeviceDTO deviceDTO = (DeviceDTO)redisTemplate.boundHashOps(SystemDefinition.DEVICE_KEY).get(deviceId);
+
+        if(deviceDTO == null){
+            deviceDTO = esRepository.searchDeviceById(deviceId);
+            refreshDevice(deviceDTO);
+        }
 
         return deviceDTO;
+    }
+
+    /**
+     * 刷新缓存
+     * @param deviceDTO
+     */
+    private void refreshDevice(DeviceDTO deviceDTO) {
+        if(deviceDTO == null) {
+            return;
+        }
+
+        redisTemplate.boundHashOps(SystemDefinition.DEVICE_KEY)
+                .put(deviceDTO.getDeviceId(), deviceDTO);
     }
 }
