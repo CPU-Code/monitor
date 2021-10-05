@@ -1,6 +1,7 @@
 package com.cpucode.monitor.es;
 
 import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.util.JsonUtil;
 import com.cpucode.monitor.vo.Pager;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -377,6 +378,22 @@ public class ESRepository {
         } catch (IOException e) {
             e.printStackTrace();
             return 0L;
+        }
+    }
+
+    /**
+     * 保存设备gps信息
+     * @param deviceLocation
+     */
+    public void saveLocation(DeviceLocation deviceLocation){
+        try{
+            IndexRequest request = new IndexRequest("gps");
+            request.source("location", deviceLocation.getLocation());
+            request.id(deviceLocation.getDeviceId());
+
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        }catch (Exception e){
+            log.error("update es error",e);
         }
     }
 }
