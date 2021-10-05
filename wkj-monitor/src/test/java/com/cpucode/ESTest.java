@@ -2,6 +2,7 @@ package com.cpucode;
 
 import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 /**
  * @author : cpucode
@@ -101,5 +104,19 @@ public class ESTest {
         //告警设备数量
         Long alarmCount = esRepository.getAlarmCount();
         System.out.println("告警设备：" + alarmCount);
+    }
+
+    /**
+     * 测试获取附近的设备
+     */
+    @Test
+    public void testGEO(){
+        List<DeviceLocation> deviceLocationList =esRepository.searchDeviceLocation(40.332, 32.3232, 10);
+
+        try {
+            System.out.println(JsonUtil.serialize(deviceLocationList));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }
