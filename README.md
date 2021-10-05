@@ -136,6 +136,21 @@
 | status    | boolean  | 开关     |
 | tag       | keyword  | 标签     |
 
+**地理位置保存**
+
+```json
+PUT /gps
+{
+  "mappings": {
+	 "properties": {
+		"location": {
+		  "type": "geo_point"
+		}
+	 }
+  }
+}
+```
+
 
 ## EMQ的配置文件
 
