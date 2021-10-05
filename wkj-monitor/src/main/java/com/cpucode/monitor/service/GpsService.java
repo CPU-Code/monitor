@@ -1,9 +1,11 @@
 package com.cpucode.monitor.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cpucode.monitor.dto.DeviceFullInfo;
 import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.entity.GPSEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,4 +36,13 @@ public interface GpsService extends IService<GPSEntity> {
      * @return
      */
     DeviceLocation analysis(String topic, Map<String, Object> payloadMap);
+
+    /**
+     * 根据经纬度获取一定范围内的设备信息
+     * @param lat 纬度
+     * @param lon 经度
+     * @param distance 半径
+     * @return
+     */
+    List<DeviceFullInfo> getDeviceFullInfo(Double lat, Double lon, Integer distance);
 }

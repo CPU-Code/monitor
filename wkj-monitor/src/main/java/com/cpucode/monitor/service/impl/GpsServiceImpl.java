@@ -1,16 +1,23 @@
 package com.cpucode.monitor.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpucode.monitor.dto.DeviceDTO;
+import com.cpucode.monitor.dto.DeviceFullInfo;
 import com.cpucode.monitor.dto.DeviceLocation;
+import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.emq.EmqClient;
 import com.cpucode.monitor.entity.GPSEntity;
+import com.cpucode.monitor.es.ESRepository;
 import com.cpucode.monitor.mapper.GpsMapper;
 import com.cpucode.monitor.service.GpsService;
+import com.cpucode.monitor.service.QuotaService;
+import com.google.common.collect.Lists;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.elasticsearch.common.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +30,12 @@ import java.util.Map;
 public class GpsServiceImpl extends ServiceImpl<GpsMapper, GPSEntity> implements GpsService {
     @Autowired
     private EmqClient emqClient;
+
+    @Autowired
+    private ESRepository esRepository;
+
+    @Autowired
+    private QuotaService quotaService;
 
     /**
      * 修改gps定义时重新订阅主题
@@ -106,5 +119,51 @@ public class GpsServiceImpl extends ServiceImpl<GpsMapper, GPSEntity> implements
         }else {
             return null;
         }
+    }
+
+    /**
+     * 根据经纬度获取一定范围内的设备信息
+     * @param lat 纬度
+     * @param lon 经度
+     * @param distance 半径
+     * @return
+     */
+    @Override
+    public List<DeviceFullInfo> getDeviceFullInfo(Double lat, Double lon, Integer distance){
+        //按范围查询设备
+        List<DeviceLocation> deviceLocationList =
+                esRepository.searchDeviceLocation(lat, lon, distance);
+
+        List<DeviceFullInfo> deviceFullInfoList= Lists.newArrayList();
+
+        //查询设备详情
+        deviceLocationList.forEach( deviceLocation -> {
+            DeviceFullInfo deviceFullInfo = new DeviceFullInfo();
+            //设备id
+            deviceFullInfo.setDeviceId(deviceLocation.getDeviceId());
+            //坐标
+            deviceFullInfo.setLocation(deviceLocation.getLocation());
+
+            //在线状态和告警状态
+            DeviceDTO deviceDTO =
+                    esRepository.searchDeviceById(deviceFullInfo.getDeviceId());
+
+            if (deviceDTO == null){
+                deviceFullInfo.setOnline(false);
+                deviceFullInfo.setAlarm(false);
+            }else {
+                deviceFullInfo.setOnline(deviceDTO.getOnline());
+                deviceFullInfo.setAlarm(deviceDTO.getAlarm());
+            }
+
+            //指标
+            List<QuotaInfo> quotaList =
+                    quotaService.getLastQuotaList(deviceLocation.getDeviceId());
+            deviceFullInfo.setQuotaInfoList(quotaList);
+
+            deviceFullInfoList.add(deviceFullInfo);
+        });
+
+        return deviceFullInfoList;
     }
 }
