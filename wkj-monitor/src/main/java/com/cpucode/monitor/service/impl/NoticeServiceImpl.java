@@ -2,12 +2,17 @@ package com.cpucode.monitor.service.impl;
 
 import com.cpucode.common.SystemDefinition;
 import com.cpucode.monitor.config.WebHookConfig;
+import com.cpucode.monitor.dto.AlarmMsg;
 import com.cpucode.monitor.dto.DeviceLocation;
 import com.cpucode.monitor.dto.QuotaDTO;
+import com.cpucode.monitor.emq.EmqClient;
 import com.cpucode.monitor.service.NoticeService;
 import com.cpucode.monitor.util.HttpUtil;
+import com.cpucode.monitor.util.JsonUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -27,6 +32,9 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Autowired
     private WebHookConfig webHookConfig;
+
+    @Autowired
+    private EmqClient emqClient;
 
     /**
      * 指标数据透传
@@ -51,6 +59,9 @@ public class NoticeServiceImpl implements NoticeService {
                 }
 
             }
+
+            //报警前端推送
+            sendAlarm(quotaDTO);
         }
     }
 
@@ -78,6 +89,28 @@ public class NoticeServiceImpl implements NoticeService {
     public void gpsTransfer(DeviceLocation deviceLocation){
         if(!Strings.isNullOrEmpty(webHookConfig.getGps())){
             HttpUtil.httpPost(webHookConfig.getGps(), deviceLocation);
+        }
+    }
+
+    /**
+     * 告警前端推送
+     * @param quotaDTO
+     */
+    private void sendAlarm(QuotaDTO quotaDTO){
+        if (!"1".equals(quotaDTO.getAlarm())){
+            return;
+        }
+
+        AlarmMsg alarmMsg = new AlarmMsg();
+        BeanUtils.copyProperties(quotaDTO, alarmMsg);
+        alarmMsg.setLevel(Integer.parseInt(quotaDTO.getLevel()));
+        alarmMsg.setOnline(true);
+
+        //发送到 emq
+        try {
+            emqClient.publish("/device/alarm", JsonUtil.serialize(alarmMsg));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 }
