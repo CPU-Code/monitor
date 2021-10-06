@@ -138,33 +138,6 @@
 
 **地理位置保存**
 
-```json
-PUT /gps
-{
-  "mappings": {
-	 "properties": {
-		"location": {
-		  "type": "geo_point"
-		}
-	 }
-  }
-}
-```
-
-```json
-GET gps/_search
-{
-  "query": {
-    "geo_distance": {
-      "distance": "1km", 
-      "location": { 
-        "lat" : 40.144,
-        "lon" : -73.989
-      }
-    }
-  }
-}
-```
 
 
 ## EMQ的配置文件

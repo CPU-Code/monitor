@@ -37,3 +37,17 @@ GET devices/_search
         "match_all": {}
     }
 }
+
+# 地理位置保存
+
+PUT /gps
+{
+    "mappings": {
+        "properties": {
+            "location": {
+                "type": "geo_point"
+            }
+        }
+    }
+}
+
