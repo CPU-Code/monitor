@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  * @csdn : https://blog.csdn.net/qq_44226094
  */
 @Slf4j
+@Component
 public class EmqMsgProcess implements MqttCallback {
     @Autowired
     private QuotaService quotaService;
