@@ -7,6 +7,7 @@ import com.cpucode.monitor.vo.LoginResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @csdn : https://blog.csdn.net/qq_44226094
  */
 @RestController
+@RequestMapping("")
 public class AdminController {
     @Autowired
     private AdminService adminService;
@@ -28,7 +30,7 @@ public class AdminController {
     @PostMapping("/login")
     public LoginResultVO login(@RequestBody AdminVO admin){
         LoginResultVO result = new LoginResultVO();
-        Integer adminId = adminService.login(admin.getLoginName(), admin.getPasswrod());
+        Integer adminId = adminService.login(admin.getLoginName(), admin.getPassword());
 
         if (adminId < 0){
             result.setLoginSuccess(false);

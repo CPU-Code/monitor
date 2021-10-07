@@ -1,5 +1,6 @@
 package com.cpucode;
 
+import com.cpucode.monitor.MonitorApplication;
 import com.cpucode.monitor.dto.QuotaInfo;
 import com.cpucode.monitor.influx.InfluxRepository;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @github : https://github.com/CPU-Code
  * @csdn : https://blog.csdn.net/qq_44226094
  */
-@SpringBootTest
+@SpringBootTest(classes = MonitorApplication.class)
 @RunWith(SpringRunner.class)
 public class InfluxTest {
     @Autowired
