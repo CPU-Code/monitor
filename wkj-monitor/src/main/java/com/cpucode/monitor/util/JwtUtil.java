@@ -24,9 +24,9 @@ import java.util.HashMap;
 @Slf4j
 public class JwtUtil {
     /**
-     * 设置秘钥明文
+     * 设置秘钥明文 , 不能带 - 等特殊字符
      */
-    public static final String JWT_KEY = "wkj-key";
+    public static final String JWT_KEY = "wkjkey";
 
     /**
      *生成jwt token

@@ -22,5 +22,5 @@ public class AdminVO implements Serializable {
     /**
      * 密码
      */
-    private String passwrod;
+    private String password;
 }
