@@ -41,13 +41,44 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminEntity> impl
             return -1;
         }
 
-        // SHA-256 + 随机盐 + 密钥对密码进行加密
-        // matches 进行的比较 加密后的值
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        if (passwordEncoder.matches(password, adminEntity.getPassword())){
+
+        if (adminEntity.getPassword().equals(password)){
             return adminEntity.getId();
         }
 
+        // SHA-256 + 随机盐 + 密钥对密码进行加密
+        // matches 进行的比较 加密后的值
+
+//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        if (passwordEncoder.matches(password, adminEntity.getPassword())){
+//            return adminEntity.getId();
+//        }
+
         return -1;
+    }
+
+    /**
+     * 注册
+     * @param loginName 用户名
+     * @param password 密码
+     * @return
+     */
+    @Override
+    public Integer register(String loginName, String password){
+        // 判断是否为空 或 null
+        if (Strings.isNullOrEmpty(loginName) || Strings.isNullOrEmpty(password)){
+            return -1;
+        }
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encode = passwordEncoder.encode(password);
+
+        AdminEntity adminEntity = new AdminEntity();
+        adminEntity.setLoginName(loginName);
+        adminEntity.setPassword(encode);
+
+        int insert = baseMapper.insert(adminEntity);
+
+        return insert;
     }
 }
