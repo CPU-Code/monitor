@@ -1,6 +1,6 @@
 @hostname = localhost
 # 172.17.0.231
-@port=9093
+@port=8003
 @contentType=application/json
 
 @Authorization=eyJhbG
@@ -18,7 +18,7 @@ Content-Type: {{contentType}}
 
 {
     "loginName":"admin",
-    "password":"admin"
+    "password":"cpucode"
 }
 
 ##################################################################################################
@@ -253,3 +253,5 @@ Content-Type: {{contentType}}
 GET http://{{hostname}}:{{port}}/gps/deviceList/40.722/-73.989/10 HTTP/1.1
 Authorization: {{Authorization}}
 Content-Type: {{contentType}}
+
+###
