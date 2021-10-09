@@ -178,7 +178,7 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, AlarmEntity> impl
                 " offset " + (page - 1) * pageSize);
 
         //3.查询记录数语句
-        StringBuilder countQl = new StringBuilder("select count(value) from quota");
+        StringBuilder countQl = new StringBuilder("select count(value) from quota ");
         countQl.append(whereQl.toString());
 
         //4.执行查询记录语句
