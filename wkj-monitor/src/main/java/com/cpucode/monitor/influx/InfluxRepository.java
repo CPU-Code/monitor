@@ -65,6 +65,7 @@ public class InfluxRepository {
      */
     public <T> List<T> query(String sql, Class<T> clazz){
         QueryResult queryResult = influxDB.query(new Query(sql, dbName));
+
         influxDB.close();
 
         InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();

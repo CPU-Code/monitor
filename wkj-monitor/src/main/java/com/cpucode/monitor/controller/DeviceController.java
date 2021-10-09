@@ -105,6 +105,7 @@ public class DeviceController {
      * @param state 启用
      * @return
      */
+    @GetMapping("/deviceQuota")
     public Pager<DeviceQuotaVO> queryQuotaData(@RequestParam(value="page",required = false,defaultValue = "1")
                                                        Long page,
                                               @RequestParam(value = "pageSize",required = false,defaultValue = "10")
