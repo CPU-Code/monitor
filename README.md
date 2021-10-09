@@ -195,3 +195,19 @@ web.hook.api.url = http://192.168.3.xxxx:8000/device/clientAction
 web.hook.rule.client.connected.1     = {"action": "on_client_connected"}
 web.hook.rule.client.disconnected.1  = {"action": "on_client_disconnected"}
 ```
+
+
+# 环境搭建
+
+## EMQ
+
+http://81.71.xxx.xxx:18083
+
+## Chronograf
+
+http://81.71.xxx.xxx:8888
+
+## Kibana
+
+http://81.71.xxx.xxx:5601
+

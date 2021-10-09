@@ -1,0 +1,257 @@
+@hostname = localhost
+# 172.17.0.231
+@port=9412
+@contentType=application/json
+
+@Authorization=eyJhbG
+##1205130634395324417
+
+
+
+####################### vscode 的 Rest Client 插件来进行测试 ###############################33
+
+
+
+####登录#######
+POST  http://{{hostname}}:{{port}}/api/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "loginName":"cpucode",
+    "password":"cpucode"
+}
+
+##################################################################################################
+
+####修改设备状态########
+PUT   http://{{hostname}}:{{port}}/device/status HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "sn":"123456",
+    "status":false
+}
+
+####设置设备标签############
+PUT   http://{{hostname}}:{{port}}/device/tags HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "sn":"123456",
+    "tags":"学校"
+}
+
+##################################################################################################
+
+####添加指标############
+POST  http://{{hostname}}:{{port}}/quota HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "name":"温度",
+    "unit":"摄氏度",
+    "subject":"temperature",
+    "valueKey":"temp",
+    "valueType":"Double",
+    "snKey":"sn",
+    "webhook":"",
+    "referenceValue":"1-5"
+}
+
+#####修改指标###########
+PUT http://{{hostname}}:{{port}}/quota HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "createTime":"2020-07-21T15:31:01",
+    "updateTime":"2020-07-21T15:31:01",
+    "id":12,
+    "name":"测试1",
+    "unit":"1",
+    "subject":"1",
+    "valueKey":"1",
+    "valueType":"Integer",
+    "snKey":"1",
+    "webhook":"1",
+    "referenceValue":"1"
+}
+
+##########删除指标#############
+DELETE  http://{{hostname}}:{{port}}/quota/128 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+#####获取数值指标###########
+GET http://{{hostname}}:{{port}}/quota/numberQuota HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+##################################################################################################
+
+
+
+#################添加告警#########
+POST http://{{hostname}}:{{port}}/alarm HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "name":"温度过高",
+    "quotaId":1,
+    "operator":">",
+    "threshold":10,
+    "level":2,
+    "cycle":10,
+    "webHook":""
+}
+
+#####添加看板############
+POST http://{{hostname}}:{{port}}/board HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{"name": "111", "quota": "", "device": "", "system": false}
+
+##########自定义面板######
+GET http://{{hostname}}:{{port}}/report/boardData/61/2020-09-08 17:10:16/2020-09-08 18:10:16/1 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+####预览面板###########
+POST http://{{hostname}}:{{port}}/report/preview HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "quotaId":1,
+    "deviceIdList":["100001","100002","100003","100004","100005"],
+    "type":3,
+    "start":"2020-09-20 00:00:00",
+    "end":"2020-09-26 23:59:59"
+}
+
+
+
+##################################################################################################
+
+
+######获取告警趋势#############
+GET http://{{hostname}}:{{port}}/report/trend/2020-09-22 11:00:00/2020-09-22 11:59:59/1 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+######原有告警趋势获取#############
+GET http://172.17.0.231:{{port}}/alarm/trend?start=2020-08-01 00:00:00&end=2020-08-30 00:00:00&quotaId=&type=3 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+##################################################################################################
+
+
+
+#######获取设备详情##############
+GET http://{{hostname}}:{{port}}/device/deviceQuota?state=3 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+####获取设备列表####
+
+GET http://{{hostname}}:{{port}}/device?tag=商场&state=0 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+############报警配置查询############
+GET http://{{hostname}}:{{port}}/alarm?page=1&pageSize=10 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+#####报警日志###########
+
+GET http://{{hostname}}:{{port}}/alarm/log?start=2020-01-01 00:00:00&end=2020-12-31 00:00:00&page=1&pageSize=10 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+####获取告警top10#########
+GET http://{{hostname}}:{{port}}/report/top10Alarm/2020-09-01 00:00:00/2020-09-30 23:59:59 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+
+##################################################################################################
+
+
+#####通过指标查询设备列表########
+GET http://{{hostname}}:{{port}}/report/devices?quotaId=1&page=1&pageSize=10 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+######获取设备状态分布##########
+
+GET http://{{hostname}}:{{port}}/report/statusCollect
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+######获取监控数据 #############
+
+GET http://{{hostname}}:{{port}}/report/monitor
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+##################################################################################################
+
+
+############设置gps指标##########
+PUT http://{{hostname}}:{{port}}/gps HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "id":1290822720395812900,
+    "subject":"geo12",
+    "snKey":"deviceSn",
+    "singleField":false,
+    "valueKey":null,
+    "separation":null,
+    "latitude":"lat",
+    "longitude":"lon"
+}
+
+#######获取gps指标######
+GET http://{{hostname}}:{{port}}/gps HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+############获取设备详情#########
+
+GET http://{{hostname}}:{{port}}/device/deviceInfo/123456 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+
+######修改设备状态########
+PUT http://{{hostname}}:{{port}}/device/status HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+{
+    "sn": "1234567", 
+    "status": true
+}
+
+
+#######根据经纬度获取设备信息############
+
+GET http://{{hostname}}:{{port}}/gps/deviceList/40.722/-73.989/10 HTTP/1.1
+Authorization: {{Authorization}}
+Content-Type: {{contentType}}
+
+###

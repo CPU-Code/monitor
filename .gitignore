@@ -21,3 +21,4 @@ buildNumber.properties
 #**/.gitignore
 **/application.yml
 wkj-monitor/src/main/resources/application.yml
+/monitor**/

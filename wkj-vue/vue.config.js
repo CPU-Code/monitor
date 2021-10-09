@@ -23,20 +23,20 @@ module.exports = {
     config.set('name', name)
   },
   devServer: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 80,
     open: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    },
+    // overlay: {
+    //   warnings: false,
+    //   errors: true
+    // },
     proxy: {
-      '/api/*': {
-        target: `http://127.0.0.1:8003`,
+      '/api': {
+        target: `http://localhost:9412`,
         // target: `https://mock.boxuegu.com/mock/1094`,
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '/'
+          '^/api': ''
         }
       }
     },
