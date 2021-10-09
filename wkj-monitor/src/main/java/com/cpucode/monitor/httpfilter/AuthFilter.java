@@ -38,6 +38,12 @@ public class AuthFilter implements Filter{
         HttpServletResponse resp = (HttpServletResponse)servletResponse;
         String path = ((HttpServletRequest) servletRequest).getServletPath();
 
+        String method = req.getMethod();
+        if ("OPTIONS".equals(method)){
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         //如果访问的是login接口，不进行jwt token校验
         if(path.equals("/login")){
             filterChain.doFilter(servletRequest, servletResponse);
