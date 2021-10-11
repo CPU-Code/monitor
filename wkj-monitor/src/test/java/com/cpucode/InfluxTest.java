@@ -25,13 +25,17 @@ public class InfluxTest {
     public void testAdd(){
         QuotaInfo quotaInfo = new QuotaInfo();
 
-        quotaInfo.setDeviceId("123456");
+        quotaInfo.setDeviceId("xxxxx");
         quotaInfo.setQuotaId("1");
-        quotaInfo.setQuotaName("温度");
+        quotaInfo.setQuotaName("ddd");
         quotaInfo.setReferenceValue("0-10");
         quotaInfo.setUnit("摄氏度");
         quotaInfo.setAlarm("1");
-        quotaInfo.setValue(11D);
+        quotaInfo.setFloatValue(11.44f);
+        quotaInfo.setDoubleValue(11.44D);
+        quotaInfo.setIntegerValue(43);
+        quotaInfo.setBoolValue(false);
+        quotaInfo.setStringValue("fdsd");
 
         influxRepository.add(quotaInfo);
     }

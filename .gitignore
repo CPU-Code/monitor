@@ -22,3 +22,4 @@ buildNumber.properties
 **/application.yml
 wkj-monitor/src/main/resources/application.yml
 /monitor**/
+wkj-monitor/monitor**/

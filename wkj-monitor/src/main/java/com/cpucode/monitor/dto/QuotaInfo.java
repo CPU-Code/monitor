@@ -65,8 +65,26 @@ public class QuotaInfo {
     /**
      * 数值指标
      */
-    @Column(name = "value")
-    private Double value;
+    @Column(name = "floatValue")
+    private Float floatValue;
+
+    /**
+     * 数值指标
+     */
+    @Column(name = "doubleValue")
+    private Double doubleValue;
+
+    /**
+     * 数值指标
+     */
+    @Column(name = "integerValue")
+    private Integer integerValue;
+
+    /**
+     * 数值指标
+     */
+    @Column(name = "boolValue")
+    private Boolean boolValue;
 
     /**
      * 非数值指标
